@@ -5,15 +5,19 @@ namespace Player
 {
     public class SquareDash : MonoBehaviour
     {
+        // Components
         private Rigidbody2D rb; // Rigidbody of the player
         private SquareMovement movementScript; // Script of the movement of the player
         private TrailRenderer dashTrail; // Trail that will show when dashing
 
         // Dash
+        [Header("Dash modifiers")]
         private float dashCounter = 1; // Quantity of dashes
-        private float dashForce = 30f; // Dash power
-        private float dashDuration = 0.2f; // Duration of the dash
-        public bool isDashing = false; // Condition to check when player is dashing
+        [SerializeField] private float dashCooldown = 1f; // The time period that the user will not dash
+        private float dashCooldownTimer; // Timer of the cooldown
+        [SerializeField] private float dashForce = 30f; // Dash power
+        [SerializeField] private float dashDuration = 0.2f; // Duration of the dash
+        [HideInInspector] public bool isDashing = false; // Condition to check when player is dashing
         
 
         private void Start()
@@ -21,15 +25,18 @@ namespace Player
             rb = GetComponent<Rigidbody2D>();
             movementScript= GetComponent<SquareMovement>();
             dashTrail = GetComponent<TrailRenderer>();
+
         }
 
         private void Update()
         {
+            if (dashCooldownTimer > 0) { dashCooldownTimer -= Time.deltaTime; }
+
             // Player will have a dash to spend when he touches the ground
             if (movementScript.IsGrounded() == true) { dashCounter = 1; }
 
             // Player will enter dash state when he presses E, has 1 dash to spend, and he is moving
-            if (Input.GetKeyDown(KeyCode.E) && dashCounter == 1 && rb.velocity.x != 0)
+            if (Input.GetKeyDown(KeyCode.E) && dashCounter == 1 && rb.velocity.x != 0 && dashCooldownTimer <= 0)
             { DashState(); }
             
             // When player is in dash state and is not on ground, he will execute the dash
@@ -68,7 +75,9 @@ namespace Player
 
             // Deactivating trail
             dashTrail.emitting = false;
-        }
 
+            // Resetting cooldown
+            dashCooldownTimer = dashCooldown;
+        }
     }
 }

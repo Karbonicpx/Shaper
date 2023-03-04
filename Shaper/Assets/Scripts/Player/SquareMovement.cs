@@ -5,6 +5,8 @@ namespace Player
     public class SquareMovement : MonoBehaviour
     {
         // Mechanics and components
+        [Header("Ground layer")]
+
         private Rigidbody2D rb; // Rigidbody
         private Collider2D playerCol; // Collider of the player
         private SquareDash dashScript; // Dash script
@@ -12,15 +14,21 @@ namespace Player
         [SerializeField] private LayerMask groundLayer; // Ground layer
         private bool facingLeft = true; // Bool condition to check when the player needs to flip
 
-        // Responsive Movement
-        private float spdX = 15f; // Base Speed
-        private float accel = 2f; // Player acceleration
-        private float deccel = -1f; // Player decceleration
-        private float velPower = 2f; // Velocity that will serve as a powering
-        private float frictionAmount = 3f; // Artifical friction value
+       // Responsive Movement
+       [Header("Responsive Movement")]
+
+       [SerializeField] private float spdX = 15f; // Base Speed
+       [SerializeField] private float accel = 2f; // Player acceleration
+       [SerializeField] private float deccel = -1f; // Player decceleration
+       [SerializeField] private float velPower = 2f; // Velocity that will serve as a powering
+       [SerializeField] private float frictionAmount = 3f; // Artifical friction value
+        private float maxHorizontalSpeed = 35f; // Max speed cap
 
         // Jump
-        private float spdY = 17f; // Jump speed
+        [Header("Jump")]
+        [SerializeField] private float spdY = 17f; // Jump speed
+        private float maxJumpSpeed = 18f; // Max jump velocity cap
+        private float maxFallSpeed = -15f; // Max fall velocity cap
 
         // Coyote time (Mechanic to make the player able to jump for a little interval after leaving the ground
         private float coyoteTime = 0.2f; // Value in seconds when the player last touched the ground
@@ -49,6 +57,8 @@ namespace Player
         {
             // Player will only move when he is not dashing
             if (dashScript.isDashing == false) ResponsiveMovement();
+
+           
         }
 
         // Method to make the player move horizontally with responsive and detailed movement
@@ -70,6 +80,9 @@ namespace Player
             
             // Applying this final movement to a right force with a maxValue, only affecting X axis
             rb.AddForce(finalMovement * Vector2.right);
+
+            // Limiting the minimun and maximum velocity of horizontal & vertical movement
+            rb.velocity = new Vector2(Mathf.Clamp(rb.velocity.x, -maxHorizontalSpeed, maxHorizontalSpeed), Mathf.Clamp(rb.velocity.y, maxFallSpeed, maxJumpSpeed));
 
             if (movement < 0 && facingLeft) { Flip(); }
             else if (movement > 0 && !facingLeft) { Flip(); }
@@ -162,7 +175,7 @@ namespace Player
             if (rb.gravityScale > 1) { rb.gravityScale = 1f; }
 
             // Raycast to detect collision
-            bool ground = Physics2D.Raycast(playerCol.bounds.center, Vector2.down, 1f, groundLayer);
+            bool ground = Physics2D.Raycast(playerCol.bounds.center, Vector2.down, 0.8f, groundLayer);
             return ground; // Returning the collision
         }
       
