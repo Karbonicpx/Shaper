@@ -3,16 +3,18 @@
 --- !u!78 &1
 TagManager:
   serializedVersion: 2
-  tags: []
+  tags:
+  - Walls
+  - Floor
   layers:
   - Default
   - TransparentFX
   - Ignore Raycast
-  - 
+  - Tilemap
   - Water
   - UI
-  - 
-  - 
+  - Player
+  - Enemies
   - 
   - 
   - 
@@ -38,6 +40,21 @@ TagManager:
   - 
   - 
   m_SortingLayers:
+  - name: Background
+    uniqueID: 2661425699
+    locked: 0
+  - name: Enemies
+    uniqueID: 3274497307
+    locked: 0
+  - name: Player
+    uniqueID: 1092635601
+    locked: 0
+  - name: Projectiles
+    uniqueID: 3187367513
+    locked: 0
+  - name: Level
+    uniqueID: 253078897
+    locked: 0
   - name: Default
     uniqueID: 0
     locked: 0
