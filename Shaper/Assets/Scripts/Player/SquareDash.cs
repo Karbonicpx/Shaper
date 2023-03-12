@@ -17,7 +17,11 @@ namespace Player
         private float dashCooldownTimer; // Timer of the cooldown
         [SerializeField] private float dashForce = 30f; // Dash power
         [SerializeField] private float dashDuration = 0.2f; // Duration of the dash
-        [HideInInspector] public bool isDashing = false; // Condition to check when player is dashing
+        private bool isDashing = false; // Condition to check when player is dashing
+        public bool Dashing
+        {
+            get { return isDashing; }
+        }
         
 
         private void Start()

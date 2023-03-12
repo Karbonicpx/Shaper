@@ -4,15 +4,15 @@ namespace Player
 {
     public class SquareMovement : MonoBehaviour
     {
-        // Mechanics and components
-        [Header("Ground layer")]
+       // Mechanics and components
+       [Header("Ground layer")]
 
-        private Rigidbody2D rb; // Rigidbody
-        private Collider2D playerCol; // Collider of the player
-        private SquareDash dashScript; // Dash script
-        private float movement; // Movement input
-        [SerializeField] private LayerMask groundLayer; // Ground layer
-        private bool facingLeft = true; // Bool condition to check when the player needs to flip
+       private Rigidbody2D rb; // Rigidbody
+       private Collider2D playerCol; // Collider of the player
+       private SquareDash dashScript; // Dash script
+       private float movement; // Movement input
+       [SerializeField] private LayerMask groundLayer; // Ground layer
+       private bool facingLeft = true; // Bool condition to check when the player needs to flip
 
        // Responsive Movement
        [Header("Responsive Movement")]
@@ -22,21 +22,21 @@ namespace Player
        [SerializeField] private float deccel = -1f; // Player decceleration
        [SerializeField] private float velPower = 2f; // Velocity that will serve as a powering
        [SerializeField] private float frictionAmount = 3f; // Artifical friction value
-        private float maxHorizontalSpeed = 35f; // Max speed cap
+       private float maxHorizontalSpeed = 35f; // Max speed cap
 
-        // Jump
-        [Header("Jump")]
-        [SerializeField] private float spdY = 17f; // Jump speed
-        private float maxJumpSpeed = 18f; // Max jump velocity cap
-        private float maxFallSpeed = -15f; // Max fall velocity cap
+       // Jump
+       [Header("Jump")]
+       [SerializeField] private float spdY = 17f; // Jump speed
+       private float maxJumpSpeed = 18f; // Max jump velocity cap
+       private float maxFallSpeed = -15f; // Max fall velocity cap
 
-        // Coyote time (Mechanic to make the player able to jump for a little interval after leaving the ground
-        private float coyoteTime = 0.2f; // Value in seconds when the player last touched the ground
-        private float coyoteTimerCounter; // Counter of coyote time
+       // Coyote time (Mechanic to make the player able to jump for a little interval after leaving the ground
+       private float coyoteTime = 0.2f; // Value in seconds when the player last touched the ground
+       private float coyoteTimerCounter; // Counter of coyote time
 
-        // Jump cut (Mechanic to make the player precisely jump when "mashing" the space)
-        private float jumpBufferTime = 0.2f; // Jump buffer time value (Jump cut)
-        private float jumpBufferCounter; // Counter of the jump buffer
+       // Jump cut (Mechanic to make the player precisely jump when "mashing" the space)
+       private float jumpBufferTime = 0.2f; // Jump buffer time value (Jump cut)
+       private float jumpBufferCounter; // Counter of the jump buffer
 
         void Start()
         {
@@ -56,7 +56,7 @@ namespace Player
         private void FixedUpdate()
         {
             // Player will only move when he is not dashing
-            if (dashScript.isDashing == false) ResponsiveMovement();
+            if (dashScript.Dashing == false) ResponsiveMovement();
 
            
         }
