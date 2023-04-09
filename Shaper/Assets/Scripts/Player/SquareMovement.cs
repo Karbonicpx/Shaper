@@ -10,6 +10,7 @@ namespace Player
        private Rigidbody2D rb; // Rigidbody
        private Collider2D playerCol; // Collider of the player
        private SquareDash dashScript; // Dash script
+        private PlayerInteraction interactionScript; // Script of interaction
        private float movement; // Movement input
        [SerializeField] private LayerMask groundLayer; // Ground layer
        private bool facingLeft = true; // Bool condition to check when the player needs to flip
@@ -43,6 +44,7 @@ namespace Player
             rb = GetComponent<Rigidbody2D>();
             playerCol = GetComponent<Collider2D>();
             dashScript = GetComponent<SquareDash>();
+            interactionScript = GetComponent<PlayerInteraction>();
         }
 
 
@@ -50,7 +52,10 @@ namespace Player
         {
             // Assigning the "movement" to the horizontal inputs
             movement = Input.GetAxis("Horizontal");
-            PlatformMechanics();
+
+            // Player can only move when he is alive
+            if (interactionScript.Dead == false) { PlatformMechanics(); }     
+            else { movement = 0f; }
         }
 
         private void FixedUpdate()

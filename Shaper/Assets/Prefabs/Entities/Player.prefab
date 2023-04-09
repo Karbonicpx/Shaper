@@ -73,7 +73,7 @@ GameObject:
   - component: {fileID: 5048032431870193025}
   - component: {fileID: 5048032431870193026}
   - component: {fileID: 5048032431870193027}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Player
   m_TagString: Player
   m_Icon: {fileID: 0}
@@ -182,7 +182,6 @@ MonoBehaviour:
   dashCooldown: 1
   dashForce: 25
   dashDuration: 0.25
-  isDashing: 0
 --- !u!114 &3837422015010561007
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -196,6 +195,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   portalObj: {fileID: 0}
+  isDead: 0
 --- !u!96 &5048032431870193025
 TrailRenderer:
   serializedVersion: 2

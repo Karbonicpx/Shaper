@@ -1,7 +1,8 @@
 using System.Collections;
 using UnityEngine;
+using CustomInterfaces;
 
-public class BlobController : MonoBehaviour
+public class BlobController : MonoBehaviour, EnemyInterfaces.IDamageable
 {
     // Components
     private Rigidbody2D rb; // Rigidbody
@@ -20,7 +21,7 @@ public class BlobController : MonoBehaviour
 
     // Value that will be checked by the distance between player and blob, and determine when blob activates or not
     [SerializeField] private float aggroRange; 
-    private Player.SquareMovement target; // Player target
+    private Player.PlayerInteraction target; // Player target
     [SerializeField] private bool isActive = false; // Active state boolean
     [SerializeField] private float unactivateCooldown; // Value that will determine the minimum time the blob will deactivate
     private float unactivateCounter;
@@ -36,7 +37,12 @@ public class BlobController : MonoBehaviour
             return Vector2.Distance(transform.position, target.transform.position) <= aggroRange;
         }
     }
-    
+
+    // Implementing interface
+    public void OnHit(bool condition)
+    {
+       
+    }
 
     void Awake()
     {
@@ -46,7 +52,7 @@ public class BlobController : MonoBehaviour
         anim = GetComponent<Animator>();
 
         // Finding the player in scene
-        target = FindObjectOfType<Player.SquareMovement>();
+        target = FindObjectOfType<Player.PlayerInteraction>();
         turnAwayCounter = turnAwayCooldownMax;
         unactivateCounter = unactivateCooldown;
 
@@ -124,4 +130,6 @@ public class BlobController : MonoBehaviour
         unactivateCounter = unactivateCooldown;
         
     }
+
+    
 }

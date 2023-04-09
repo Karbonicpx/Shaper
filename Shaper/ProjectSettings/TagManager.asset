@@ -7,6 +7,8 @@ TagManager:
   - Walls
   - Floor
   - Portal
+  - Enemy
+  - Saw
   layers:
   - Default
   - TransparentFX
@@ -52,6 +54,9 @@ TagManager:
     locked: 0
   - name: Projectiles
     uniqueID: 3187367513
+    locked: 0
+  - name: Sawblade
+    uniqueID: 782801551
     locked: 0
   - name: Level
     uniqueID: 253078897
