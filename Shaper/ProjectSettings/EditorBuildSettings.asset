@@ -11,4 +11,34 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/Safezone.unity
     guid: 4197947f14a0b224cbbb5862d9f6d4bb
+  - enabled: 1
+    path: Assets/Scenes/Sequence 1/Level S1.1.unity
+    guid: 29a722eb1b315c448897710667ee41e8
+  - enabled: 1
+    path: Assets/Scenes/Sequence 1/Level S1.2.unity
+    guid: 90b856add19a1964c9ad4814090f16cf
+  - enabled: 1
+    path: Assets/Scenes/Sequence 1/Level S1.3.unity
+    guid: 1b1040a0967b2614d92488c64f906a52
+  - enabled: 1
+    path: Assets/Scenes/Sequence 1/Level S1.4.unity
+    guid: 1485bde7b8f9e8647a8285eb9396c8d1
+  - enabled: 1
+    path: Assets/Scenes/Sequence 1/Level S1.5.unity
+    guid: f4d5e9052a462ed43b1d354f024dfb08
+  - enabled: 1
+    path: Assets/Scenes/Sequence 1/Level S1.6.unity
+    guid: e593ade60b049384db9b5b27f01aa1ee
+  - enabled: 1
+    path: Assets/Scenes/Sequence 1/Level S1.7.unity
+    guid: 5b31f225670d84a488267778b45317e3
+  - enabled: 1
+    path: Assets/Scenes/Sequence 1/Level S1.8.unity
+    guid: c636cf2d36049584c816cdb8b710b1cf
+  - enabled: 1
+    path: Assets/Scenes/Sequence 1/Level S1.9.unity
+    guid: 9b8b810d3449e11438a070738431fb8c
+  - enabled: 1
+    path: Assets/Scenes/Sequence 1/Level S1.10.unity
+    guid: e2eb4aa59e9c0da4aa2ef60c58631df9
   m_configObjects: {}

@@ -33,8 +33,14 @@ public class BlobController : MonoBehaviour, EnemyInterfaces.IDamageable
     {
         get
         {
-            // Returns true when the distance between blob and player is smaller or equal than the aggro range
-            return Vector2.Distance(transform.position, target.transform.position) <= aggroRange;
+            // If blob is below the player, and not above
+            if (transform.position.y < target.transform.position.y) 
+            {
+                // Returns true when the distance between blob and player is smaller or equal than the aggro range
+                return target.transform.position.x - transform.position.x <= aggroRange;
+            }
+            else { return false; }
+            
         }
     }
 

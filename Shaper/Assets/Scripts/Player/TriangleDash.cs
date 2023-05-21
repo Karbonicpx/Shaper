@@ -3,11 +3,11 @@ using UnityEngine;
 
 namespace Player
 {
-    public class SquareDash : MonoBehaviour
+    public class TriangleDash : MonoBehaviour
     {
         // Components
         private Rigidbody2D rb; // Rigidbody of the player
-        private SquareMovement movementScript; // Script of the movement of the player
+        private PlayerMovement movementScript; // Script of the movement of the player
         private TrailRenderer dashTrail; // Trail that will show when dashing
 
         // Dash
@@ -22,12 +22,12 @@ namespace Player
         {
             get { return isDashing; }
         }
-        
+
 
         private void Start()
         {
             rb = GetComponent<Rigidbody2D>();
-            movementScript= GetComponent<SquareMovement>();
+            movementScript = GetComponent<PlayerMovement>();
             dashTrail = GetComponent<TrailRenderer>();
 
         }
@@ -37,14 +37,14 @@ namespace Player
             if (dashCooldownTimer > 0) { dashCooldownTimer -= Time.deltaTime; }
 
             // Player will have a dash to spend when he touches the ground
-            if (movementScript.IsGrounded() == true) { dashCounter = 1; }
+            if (movementScript.OnGround) { dashCounter = 1; }
 
             // Player will enter dash state when he presses E, has 1 dash to spend, and he is moving
             if (Input.GetKeyDown(KeyCode.E) && dashCounter == 1 && rb.velocity.x != 0 && dashCooldownTimer <= 0)
             { DashState(); }
-            
+
             // When player is in dash state and is not on ground, he will execute the dash
-            if (isDashing == true && movementScript.IsGrounded() == false) StartCoroutine(DashCoroutine());
+            if (isDashing == true && !movementScript.OnGround) StartCoroutine(DashCoroutine());
             else { isDashing = false; }
         }
 

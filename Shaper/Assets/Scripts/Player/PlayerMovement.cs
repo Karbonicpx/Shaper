@@ -2,49 +2,60 @@ using UnityEngine;
 
 namespace Player
 {
-    public class SquareMovement : MonoBehaviour
+    public class PlayerMovement : MonoBehaviour
     {
-       // Mechanics and components
-       [Header("Ground layer")]
-
-       private Rigidbody2D rb; // Rigidbody
-       private Collider2D playerCol; // Collider of the player
-       private SquareDash dashScript; // Dash script
+        // Mechanics and components
+        [Header("Components & IsGrounded")]
+        private Rigidbody2D rb; // Rigidbody
         private PlayerInteraction interactionScript; // Script of interaction
-       private float movement; // Movement input
-       [SerializeField] private LayerMask groundLayer; // Ground layer
-       private bool facingLeft = true; // Bool condition to check when the player needs to flip
+        private PlayerWallJump wallJumpScript; // Script of wallJump
+        [SerializeField] private LayerMask groundLayer; // Ground layer
+        [SerializeField] private Transform groundCheckPosition; // Position where the circle of checking ground collision is
+        [SerializeField] private float groundCircleColliderRadius; // ground collision radius
+        
 
-       // Responsive Movement
-       [Header("Responsive Movement")]
+        // Responsive Movement
+        [Header("Responsive Movement")]
+        [SerializeField] private float spdX; // Base Speed
+        [SerializeField] private float accel; // Player acceleration
+        [SerializeField] private float deccel; // Player decceleration
+        [SerializeField] private float velPower; // Velocity that will serve as a powering
+        [SerializeField] private float frictionAmount; // Artifical friction value
+        private float movement; // Movement input
+        private bool facingLeft = true; // Bool condition to check when the player needs to flip
+        private float maxHorizontalSpeed = 15f; // Max speed cap
 
-       [SerializeField] private float spdX = 15f; // Base Speed
-       [SerializeField] private float accel = 2f; // Player acceleration
-       [SerializeField] private float deccel = -1f; // Player decceleration
-       [SerializeField] private float velPower = 2f; // Velocity that will serve as a powering
-       [SerializeField] private float frictionAmount = 3f; // Artifical friction value
-       private float maxHorizontalSpeed = 35f; // Max speed cap
+        // Jump
+        [Header("Jump")]
+        [SerializeField] private float spdY = 17f; // Jump speed
+        private float maxJumpSpeed = 18f; // Max jump velocity cap
+        private float maxFallSpeed = -15f; // Max fall velocity cap
 
-       // Jump
-       [Header("Jump")]
-       [SerializeField] private float spdY = 17f; // Jump speed
-       private float maxJumpSpeed = 18f; // Max jump velocity cap
-       private float maxFallSpeed = -15f; // Max fall velocity cap
+        // Coyote time (Mechanic to make the player able to jump for a little interval after leaving the ground
+        [SerializeField] private float coyoteTime = 0.2f; // Value in seconds when the player last touched the ground
+        private float coyoteTimerCounter; // Counter of coyote time
 
-       // Coyote time (Mechanic to make the player able to jump for a little interval after leaving the ground
-       private float coyoteTime = 0.2f; // Value in seconds when the player last touched the ground
-       private float coyoteTimerCounter; // Counter of coyote time
+        // Jump cut (Mechanic to make the player precisely jump when "mashing" the space)
+        [SerializeField] private float jumpBufferTime = 0.15f; // Jump buffer time value (Jump cut)
+        private float jumpBufferCounter; // Counter of the jump buffer
+    
+        public bool OnGround
+        {
+            get { return IsGrounded(); }
+        }
+        
 
-       // Jump cut (Mechanic to make the player precisely jump when "mashing" the space)
-       private float jumpBufferTime = 0.2f; // Jump buffer time value (Jump cut)
-       private float jumpBufferCounter; // Counter of the jump buffer
+        public float CurrentMovement
+        {
+            get { return movement; }
+            set { movement = value; }
+        }
 
         void Start()
         {
             rb = GetComponent<Rigidbody2D>();
-            playerCol = GetComponent<Collider2D>();
-            dashScript = GetComponent<SquareDash>();
             interactionScript = GetComponent<PlayerInteraction>();
+            wallJumpScript = GetComponent<PlayerWallJump>();
         }
 
 
@@ -52,24 +63,21 @@ namespace Player
         {
             // Assigning the "movement" to the horizontal inputs
             movement = Input.GetAxis("Horizontal");
-
             // Player can only move when he is alive
-            if (interactionScript.Dead == false) { PlatformMechanics(); }     
+            if (interactionScript.Dead == false) { PlatformMechanics(); }
             else { movement = 0f; }
+
         }
 
         private void FixedUpdate()
         {
-            // Player will only move when he is not dashing
-            if (dashScript.Dashing == false) ResponsiveMovement();
+            if (!wallJumpScript.IsWallJumpingNow) ResponsiveMovement();
 
-           
         }
 
         // Method to make the player move horizontally with responsive and detailed movement
         private void ResponsiveMovement()
         {
-
             // Calculates the direction of the movement
             float playerSpeed = movement * spdX;
 
@@ -77,18 +85,19 @@ namespace Player
             float speedDif = playerSpeed - rb.velocity.x;
 
             // Changes the acceleration rate when player moves and stops
-            float accelRate = (Mathf.Abs(playerSpeed) > 0.01f) ? accel : deccel;
+            float accelRate = Mathf.Abs(playerSpeed) > 0.01f ? accel : deccel;
 
             // Applying acceleration to the speed difference, which with pow, increases acceleration constantly
             // Mathf.sign serves for redirection
             float finalMovement = Mathf.Pow(Mathf.Abs(speedDif) * accelRate, velPower) * Mathf.Sign(speedDif);
-            
+
             // Applying this final movement to a right force with a maxValue, only affecting X axis
             rb.AddForce(finalMovement * Vector2.right);
 
             // Limiting the minimun and maximum velocity of horizontal & vertical movement
             rb.velocity = new Vector2(Mathf.Clamp(rb.velocity.x, -maxHorizontalSpeed, maxHorizontalSpeed), Mathf.Clamp(rb.velocity.y, maxFallSpeed, maxJumpSpeed));
 
+            
             if (movement < 0 && facingLeft) { Flip(); }
             else if (movement > 0 && !facingLeft) { Flip(); }
 
@@ -96,10 +105,10 @@ namespace Player
 
         // Method to agroup methods
         private void PlatformMechanics()
-        {
-            CoyoteJump();
-            Jump();
-            Friction();     
+        {          
+            if (wallJumpScript.IsWallJumpingNow == false && wallJumpScript.IsSliding == false) { Jump(); CoyoteJump(); }
+            Friction();
+           
         }
 
         // Method that will execute the coyote jump mechanic
@@ -129,7 +138,7 @@ namespace Player
         private void Friction()
         {
             // If player is in the ground, and his rb.velocity is smaller than 0.01f
-            if (IsGrounded() == true && Mathf.Abs(movement) < 0.01f)
+            if (IsGrounded() && Mathf.Abs(movement) < 0.01f)
             {
                 // Calculates the minimum value between player speed and friction amount
                 float amount = Mathf.Min(Mathf.Abs(rb.velocity.x), Mathf.Abs(frictionAmount));
@@ -144,12 +153,12 @@ namespace Player
 
         // Method to implement jump and it´s features
         private void Jump()
-        {      
+        {
             // Key for when releasing the jump key
             bool releaseJumpKey = Input.GetKeyUp(KeyCode.Space);
 
-            // Player will only jump when his coyote is enabled, jump buffer enabled 
-            if (coyoteTimerCounter > 0 && jumpBufferCounter > 0 && IsGrounded() == true || IsGrounded() == false && coyoteTimerCounter > 0 && jumpBufferCounter > 0) 
+            // Player will only jump when his coyote is enabled and jump buffer enabled          
+            if (coyoteTimerCounter > 0 && jumpBufferCounter > 0 && IsGrounded() || IsGrounded() == false && coyoteTimerCounter > 0 && jumpBufferCounter > 0)
             {
                 jumpBufferCounter = 0f;
                 rb.AddForce(Vector2.up * spdY, ForceMode2D.Impulse);
@@ -162,28 +171,30 @@ namespace Player
                 rb.velocity = new Vector2(rb.velocity.x, rb.velocity.y * 0.5f);
                 coyoteTimerCounter = 0f; // Resetting coyote timer
             }
+         
+
         }
-        
 
         // Method to make the player flip to the direction his facing
         private void Flip()
         {
             // When he is facing left, he faces right, and vice-versa
             facingLeft = !facingLeft;
-            transform.localScale *= -1f; // Changes local scale
+            transform.localScale = new Vector2(transform.localScale.x * -1f, transform.localScale.y); // Changes X local scale
+           
         }
 
         // Method to check if the player is touching the ground
-        public bool IsGrounded()
+        private bool IsGrounded()
         {
             // Returning to default gravity when player touches the ground
             if (rb.gravityScale > 1) { rb.gravityScale = 1f; }
 
-            // Raycast to detect collision
-            bool ground = Physics2D.Raycast(playerCol.bounds.center, Vector2.down, 0.8f, groundLayer);
-            return ground; // Returning the collision
+            // overlapCircle to detect collision precisely
+            bool ground = Physics2D.OverlapCircle(transform.position, groundCircleColliderRadius, groundLayer);
+
+            return ground;
         }
-      
+
     }
 }
-
